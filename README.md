@@ -39,6 +39,12 @@ A full-stack web application for managing a sweet shop inventory, allowing users
 
 ---
 
+## My AI Usage
+- Tool Used: Github copilot, Chatgpt
+- How I Used It: Used Claude to generate the complete backend API structure, React frontend components, TypeScript interfaces, authentication middleware, and comprehensive test cases. Also utilized for debugging deployment issues and Docker configuration.
+- Impact: Accelerated development by ~70%, maintained consistent code quality, and provided instant solutions for technical challenges. Required manual review for business logic and environment-specific configurations. 
+
+---
 ##  Project Overview
 
 The Sweet Shop Management System is a comprehensive inventory management solution designed for sweet shops. It provides:
