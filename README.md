@@ -30,7 +30,7 @@ The Sweet Shop Management System is a comprehensive inventory management solutio
 - **Purchase System**: Users can purchase sweets with automatic inventory updates
 - **Restock Management**: Admins can restock inventory items
 - **Image Support**: Upload and display images for sweet items
-- **Responsive Design**: Modern, mobile-friendly UI built with Tailwind CSS
+- **Responsive Design**: Modern UI built with Tailwind CSS
 
 ---
 
@@ -41,7 +41,7 @@ The Sweet Shop Management System is a comprehensive inventory management solutio
 -  Search and filter sweets by name, category, and price
 -  Purchase sweets with quantity selection
 -  View sweet details including images, descriptions, and prices
--  Responsive design for mobile and desktop
+-  Responsive design for desktop
 
 ### For Administrators
 -  Admin registration and authentication
@@ -511,5 +511,6 @@ Content-Type: application/json
 Shradhesh Gaikwad
 
 ---
+
 
 
