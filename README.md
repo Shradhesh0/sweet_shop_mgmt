@@ -2,8 +2,8 @@
 
 A full-stack web application for managing a sweet shop inventory, allowing users to browse, search, and purchase sweets, with role-based access control for administrators to manage the inventory.
 
-# Backend URL -> https://sweet-shop-mgmt.onrender.com
-# Frontend URL -> https://sweet-shop-frontend-b6bl.onrender.com
+- Backend URL -> https://sweet-shop-mgmt.onrender.com
+- Frontend URL -> https://sweet-shop-frontend-b6bl.onrender.com
 
 # Screeshots
 <p align="center">
