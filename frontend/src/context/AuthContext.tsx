@@ -4,7 +4,7 @@
  */
 
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
-import { AuthContextType, User, LoginCredentials, RegisterData } from '../types/auth.types';
+import { AuthContextType, User, LoginCredentials, RegisterData, AuthResponse } from '../types/auth.types';
 import * as authService from '../services/auth.service';
 import { saveToken, saveUser, getToken, getUser, clearAuth } from '../utils/storage';
 
@@ -46,13 +46,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   /**
    * Login user with credentials
    */
-  const login = async (credentials: LoginCredentials): Promise<void> => {
+  const login = async (credentials: LoginCredentials): Promise<AuthResponse> => {
     try {
       const response = await authService.login(credentials);
       setToken(response.token);
       setUser(response.user);
       saveToken(response.token);
       saveUser(response.user);
+      return response;
     } catch (error) {
       throw error;
     }
@@ -61,13 +62,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   /**
    * Register new user
    */
-  const register = async (data: RegisterData): Promise<void> => {
+  const register = async (data: RegisterData): Promise<AuthResponse> => {
     try {
       const response = await authService.register(data);
       setToken(response.token);
       setUser(response.user);
       saveToken(response.token);
       saveUser(response.user);
+      return response;
     } catch (error) {
       throw error;
     }

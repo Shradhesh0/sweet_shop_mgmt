@@ -1,38 +1,53 @@
 import React, { useState } from 'react';
 import { Sweet } from '../types/sweet.types';
 import { useSweets } from '../hooks/useSweets';
-import { deleteSweet, restockSweet } from '../services/sweet.service';
+import { deleteSweet } from '../services/sweet.service';
 import SearchBar from '../components/sweets/SearchBar';
 import SweetsList from '../components/sweets/SweetsList';
 import AddSweetForm from '../components/sweets/AddSweetForm';
+import EditSweetForm from '../components/sweets/EditSweetForm';
 import PurchaseModal from '../components/sweets/PurchaseModal';
+import RestockModal from '../components/sweets/RestockModal';
+import DeleteConfirmationModal from '../components/sweets/DeleteConfirmationModal';
 
 const AdminPanel: React.FC = () => {
   const { sweets, loading, searchSweets, fetchSweets } = useSweets();
   const [selectedSweet, setSelectedSweet] = useState<Sweet | null>(null);
   const [purchaseModalOpen, setPurchaseModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [restockModalOpen, setRestockModalOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
-  const handleDelete = async (sweet: Sweet) => {
-    if (window.confirm(`Are you sure you want to delete "${sweet.name}"?`)) {
-      try {
-        await deleteSweet(sweet.id);
-        fetchSweets();
-      } catch (error: any) {
-        alert(error.message || 'Failed to delete sweet');
-      }
+  const handleEdit = (sweet: Sweet) => {
+    setSelectedSweet(sweet);
+    setEditModalOpen(true);
+  };
+
+  const handleDeleteClick = (sweet: Sweet) => {
+    setSelectedSweet(sweet);
+    setDeleteModalOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!selectedSweet) return;
+
+    setDeleteLoading(true);
+    try {
+      await deleteSweet(selectedSweet.id);
+      fetchSweets();
+      setDeleteModalOpen(false);
+      setSelectedSweet(null);
+    } catch (error: any) {
+      alert(error.message || 'Failed to delete sweet');
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
-  const handleRestock = async (sweet: Sweet) => {
-    const quantity = prompt('Enter quantity to restock:', '10');
-    if (quantity) {
-      try {
-        await restockSweet(sweet.id, { quantity: parseInt(quantity) });
-        fetchSweets();
-      } catch (error: any) {
-        alert(error.message || 'Failed to restock');
-      }
-    }
+  const handleRestock = (sweet: Sweet) => {
+    setSelectedSweet(sweet);
+    setRestockModalOpen(true);
   };
 
   return (
@@ -43,6 +58,7 @@ const AdminPanel: React.FC = () => {
           <p className="text-gray-600">Manage your sweet inventory</p>
         </div>
 
+        {/* Add New Sweet Form */}
         <AddSweetForm onSuccess={fetchSweets} />
 
         <div className="mt-8">
@@ -56,16 +72,52 @@ const AdminPanel: React.FC = () => {
               setSelectedSweet(sweet);
               setPurchaseModalOpen(true);
             }}
-            onDelete={handleDelete}
+            onEdit={handleEdit}
+            onDelete={handleDeleteClick}
             onRestock={handleRestock}
           />
         </div>
 
+        {/* Modals */}
         <PurchaseModal
           sweet={selectedSweet}
           isOpen={purchaseModalOpen}
-          onClose={() => setPurchaseModalOpen(false)}
+          onClose={() => {
+            setPurchaseModalOpen(false);
+            setSelectedSweet(null);
+          }}
           onSuccess={fetchSweets}
+        />
+
+        <EditSweetForm
+          sweet={selectedSweet}
+          isOpen={editModalOpen}
+          onClose={() => {
+            setEditModalOpen(false);
+            setSelectedSweet(null);
+          }}
+          onSuccess={fetchSweets}
+        />
+
+        <RestockModal
+          sweet={selectedSweet}
+          isOpen={restockModalOpen}
+          onClose={() => {
+            setRestockModalOpen(false);
+            setSelectedSweet(null);
+          }}
+          onSuccess={fetchSweets}
+        />
+
+        <DeleteConfirmationModal
+          sweet={selectedSweet}
+          isOpen={deleteModalOpen}
+          onClose={() => {
+            setDeleteModalOpen(false);
+            setSelectedSweet(null);
+          }}
+          onConfirm={handleDeleteConfirm}
+          loading={deleteLoading}
         />
       </div>
     </div>

@@ -10,11 +10,12 @@ interface AddSweetFormProps {
 }
 
 const AddSweetForm: React.FC<AddSweetFormProps> = ({ onSuccess }) => {
-  const [formData, setFormData] = useState<CreateSweetData>({
+  // Use string values for form inputs (number inputs need strings)
+  const [formData, setFormData] = useState({
     name: '',
     category: '',
-    price: 0,
-    quantity: 0,
+    price: '',
+    quantity: '',
     description: '',
   });
   const [loading, setLoading] = useState(false);
@@ -24,7 +25,7 @@ const AddSweetForm: React.FC<AddSweetFormProps> = ({ onSuccess }) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: name === 'price' || name === 'quantity' ? parseFloat(value) || 0 : value
+      [name]: value
     }));
   };
 
@@ -33,9 +34,32 @@ const AddSweetForm: React.FC<AddSweetFormProps> = ({ onSuccess }) => {
     setLoading(true);
     setError(null);
 
+    // Validate numeric fields
+    const priceNum = parseFloat(formData.price);
+    const quantityNum = parseInt(formData.quantity, 10);
+
+    if (isNaN(priceNum) || priceNum < 0) {
+      setError('Please enter a valid price');
+      setLoading(false);
+      return;
+    }
+
+    if (isNaN(quantityNum) || quantityNum < 0) {
+      setError('Please enter a valid quantity');
+      setLoading(false);
+      return;
+    }
+
     try {
-      await createSweet(formData);
-      setFormData({ name: '', category: '', price: 0, quantity: 0, description: '' });
+      // Convert to numbers for API
+      await createSweet({
+        name: formData.name,
+        category: formData.category,
+        price: priceNum,
+        quantity: quantityNum,
+        description: formData.description,
+      });
+      setFormData({ name: '', category: '', price: '', quantity: '', description: '' });
       onSuccess();
     } catch (err: any) {
       setError(err.message || 'Failed to add sweet');

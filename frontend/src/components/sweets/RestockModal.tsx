@@ -1,16 +1,16 @@
 /**
- * Purchase Modal Component
+ * Restock Modal Component
  */
 
-import React, { useState } from 'react';
-import { ShoppingCart } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Package } from 'lucide-react';
 import { Sweet } from '../../types/sweet.types';
 import Modal from '../common/Modal';
 import Input from '../common/Input';
 import Button from '../common/Button';
-import { purchaseSweet } from '../../services/sweet.service';
+import { restockSweet } from '../../services/sweet.service';
 
-interface PurchaseModalProps {
+interface RestockModalProps {
   sweet: Sweet | null;
   isOpen: boolean;
   onClose: () => void;
@@ -18,36 +18,39 @@ interface PurchaseModalProps {
 }
 
 /**
- * Modal for purchasing sweets
+ * Modal for restocking sweets (Admin only)
  */
-const PurchaseModal: React.FC<PurchaseModalProps> = ({
+const RestockModal: React.FC<RestockModalProps> = ({
   sweet,
   isOpen,
   onClose,
   onSuccess,
 }) => {
-  const [quantity, setQuantity] = useState<number>(1);
+  const [quantity, setQuantity] = useState<number>(10);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
+  useEffect(() => {
+    if (sweet && isOpen) {
+      setQuantity(10);
+      setError(null);
+      setSuccess(false);
+    }
+  }, [sweet, isOpen]);
+
   const handleClose = () => {
-    setQuantity(1);
+    setQuantity(10);
     setError(null);
     setSuccess(false);
     onClose();
   };
 
-  const handlePurchase = async () => {
+  const handleRestock = async () => {
     if (!sweet) return;
 
     if (quantity <= 0) {
-      setError('Please enter a valid quantity');
-      return;
-    }
-
-    if (quantity > sweet.quantity) {
-      setError(`Only ${sweet.quantity} items available in stock`);
+      setError('Please enter a valid quantity greater than 0');
       return;
     }
 
@@ -55,14 +58,14 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({
     setError(null);
 
     try {
-      await purchaseSweet(sweet.id, { quantity });
+      await restockSweet(sweet.id, { quantity });
       setSuccess(true);
       setTimeout(() => {
         onSuccess();
         handleClose();
       }, 1500);
     } catch (err: any) {
-      setError(err.message || 'Purchase failed');
+      setError(err.message || 'Failed to restock sweet');
     } finally {
       setLoading(false);
     }
@@ -70,16 +73,15 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({
 
   if (!sweet) return null;
 
-  const price = Number(sweet.price) || 0;
-  const totalPrice = (price * quantity).toFixed(2);
-
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} title="Purchase Sweet">
+    <Modal isOpen={isOpen} onClose={handleClose} title="Restock Sweet">
       {success ? (
         <div className="text-center py-8">
           <div className="text-6xl mb-4">✅</div>
-          <h3 className="text-2xl font-bold text-green-600 mb-2">Purchase Successful!</h3>
-          <p className="text-gray-600">Your order has been confirmed</p>
+          <h3 className="text-2xl font-bold text-green-600 mb-2">Restock Successful!</h3>
+          <p className="text-gray-600">
+            {quantity} units have been added to {sweet.name}
+          </p>
         </div>
       ) : (
         <>
@@ -90,8 +92,8 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({
               <div className="flex-1">
                 <h3 className="text-xl font-bold text-gray-800">{sweet.name}</h3>
                 <p className="text-gray-600">{sweet.category}</p>
-                <p className="text-2xl font-bold text-purple-600 mt-2">
-                  ${(Number(sweet.price) || 0).toFixed(2)} each
+                <p className="text-sm text-gray-500 mt-2">
+                  Current Stock: <span className="font-semibold">{sweet.quantity}</span>
                 </p>
               </div>
             </div>
@@ -106,40 +108,30 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({
 
           {/* Quantity Input */}
           <Input
-            label="Quantity"
+            label="Quantity to Add"
             type="number"
             value={quantity}
             onChange={(e) => {
-              setQuantity(parseInt(e.target.value) || 1);
+              setQuantity(parseInt(e.target.value) || 0);
               setError(null);
             }}
             min={1}
-            max={sweet.quantity}
             required
           />
 
-          {/* Available Stock */}
           <p className="text-sm text-gray-600 mb-4">
-            Available in stock: <span className="font-semibold">{sweet.quantity}</span>
+            After restocking, total stock will be: <span className="font-semibold">{Number(sweet.quantity) + quantity}</span>
           </p>
-
-          {/* Total Price */}
-          <div className="bg-purple-50 rounded-lg p-4 mb-6">
-            <div className="flex justify-between items-center">
-              <span className="text-gray-700 font-medium">Total Price:</span>
-              <span className="text-3xl font-bold text-purple-600">${totalPrice}</span>
-            </div>
-          </div>
 
           {/* Actions */}
           <div className="flex space-x-3">
             <Button variant="secondary" onClick={handleClose} fullWidth disabled={loading}>
               Cancel
             </Button>
-            <Button onClick={handlePurchase} fullWidth disabled={loading}>
+            <Button onClick={handleRestock} fullWidth disabled={loading} variant="success">
               <div className="flex items-center justify-center space-x-2">
-                <ShoppingCart size={18} />
-                <span>{loading ? 'Processing...' : 'Confirm Purchase'}</span>
+                <Package size={18} />
+                <span>{loading ? 'Processing...' : 'Confirm Restock'}</span>
               </div>
             </Button>
           </div>
@@ -149,4 +141,5 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({
   );
 };
 
-export default PurchaseModal;
+export default RestockModal;
+

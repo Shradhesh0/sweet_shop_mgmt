@@ -22,6 +22,7 @@ const RegisterForm: React.FC = () => {
     email: '',
     password: '',
     confirmPassword: '',
+    role: 'user' as 'user' | 'admin',
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [loading, setLoading] = useState(false);
@@ -71,12 +72,14 @@ const RegisterForm: React.FC = () => {
 
     setLoading(true);
     try {
-      await register({
+      const response = await register({
         name: formData.name,
         email: formData.email,
         password: formData.password,
+        role: formData.role,
       });
-      navigate('/dashboard');
+      // Redirect based on actual role returned from server
+      navigate(response.user.role === 'admin' ? '/admin' : '/dashboard');
     } catch (error: any) {
       setApiError(error.message || 'Registration failed. Please try again.');
     } finally {
@@ -148,6 +151,70 @@ const RegisterForm: React.FC = () => {
             required
             error={errors.confirmPassword}
           />
+
+          {/* Role Selection */}
+          <div className="mb-4">
+            <label className="block text-gray-700 font-medium mb-3">
+              Account Type <span className="text-red-500">*</span>
+            </label>
+            <div className="grid grid-cols-2 gap-4">
+              <button
+                type="button"
+                onClick={() => setFormData((prev) => ({ ...prev, role: 'user' }))}
+                className={`p-4 rounded-lg border-2 transition-all duration-200 ${
+                  formData.role === 'user'
+                    ? 'border-purple-600 bg-purple-50 shadow-md'
+                    : 'border-gray-300 bg-white hover:border-gray-400'
+                }`}
+              >
+                <div className="flex items-center space-x-2">
+                  <div
+                    className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                      formData.role === 'user'
+                        ? 'border-purple-600'
+                        : 'border-gray-400'
+                    }`}
+                  >
+                    {formData.role === 'user' && (
+                      <div className="w-2 h-2 rounded-full bg-purple-600"></div>
+                    )}
+                  </div>
+                  <div className="text-left">
+                    <div className="font-semibold text-gray-800">User</div>
+                    <div className="text-sm text-gray-500">Browse and purchase sweets</div>
+                  </div>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setFormData((prev) => ({ ...prev, role: 'admin' }))}
+                className={`p-4 rounded-lg border-2 transition-all duration-200 ${
+                  formData.role === 'admin'
+                    ? 'border-purple-600 bg-purple-50 shadow-md'
+                    : 'border-gray-300 bg-white hover:border-gray-400'
+                }`}
+              >
+                <div className="flex items-center space-x-2">
+                  <div
+                    className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                      formData.role === 'admin'
+                        ? 'border-purple-600'
+                        : 'border-gray-400'
+                    }`}
+                  >
+                    {formData.role === 'admin' && (
+                      <div className="w-2 h-2 rounded-full bg-purple-600"></div>
+                    )}
+                  </div>
+                  <div className="text-left">
+                    <div className="font-semibold text-gray-800">Admin</div>
+                    <div className="text-sm text-gray-500">Manage inventory and orders</div>
+                  </div>
+                </div>
+              </button>
+            </div>
+          </div>
 
           <Button type="submit" fullWidth disabled={loading} className="mt-6">
             {loading ? 'Creating account...' : 'Create Account'}

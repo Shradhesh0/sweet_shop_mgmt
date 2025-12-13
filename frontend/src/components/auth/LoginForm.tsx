@@ -60,8 +60,10 @@ const LoginForm: React.FC = () => {
 
     setLoading(true);
     try {
-      await login(formData);
-      navigate('/dashboard');
+      // Login and get response to check user role
+      const response = await login(formData);
+      // Redirect based on role
+      navigate(response.user.role === 'admin' ? '/admin' : '/dashboard');
     } catch (error: any) {
       setApiError(error.message || 'Login failed. Please try again.');
     } finally {

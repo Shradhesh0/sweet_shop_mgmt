@@ -13,11 +13,21 @@ import {
 } from '../types/sweet.types';
 
 /**
+ * Normalize sweet data to ensure proper types
+ */
+const normalizeSweet = (sweet: any): Sweet => ({
+  ...sweet,
+  price: typeof sweet.price === 'string' ? parseFloat(sweet.price) : Number(sweet.price),
+  quantity: typeof sweet.quantity === 'string' ? parseInt(sweet.quantity, 10) : Number(sweet.quantity),
+  id: typeof sweet.id === 'string' ? parseInt(sweet.id, 10) : Number(sweet.id),
+});
+
+/**
  * Get all sweets
  */
 export const getAllSweets = async (): Promise<Sweet[]> => {
   const response = await api.get<{ sweets: Sweet[] }>('/sweets');
-  return response.data.sweets;
+  return response.data.sweets.map(normalizeSweet);
 };
 
 /**
@@ -32,7 +42,7 @@ export const searchSweets = async (params: SearchParams): Promise<Sweet[]> => {
   if (params.maxPrice !== undefined) queryParams.append('maxPrice', params.maxPrice.toString());
 
   const response = await api.get<{ sweets: Sweet[] }>(`/sweets/search?${queryParams.toString()}`);
-  return response.data.sweets;
+  return response.data.sweets.map(normalizeSweet);
 };
 
 /**
@@ -40,7 +50,7 @@ export const searchSweets = async (params: SearchParams): Promise<Sweet[]> => {
  */
 export const createSweet = async (data: CreateSweetData): Promise<Sweet> => {
   const response = await api.post<{ sweet: Sweet }>('/sweets', data);
-  return response.data.sweet;
+  return normalizeSweet(response.data.sweet);
 };
 
 /**
@@ -48,7 +58,7 @@ export const createSweet = async (data: CreateSweetData): Promise<Sweet> => {
  */
 export const updateSweet = async (id: number, data: UpdateSweetData): Promise<Sweet> => {
   const response = await api.put<{ sweet: Sweet }>(`/sweets/${id}`, data);
-  return response.data.sweet;
+  return normalizeSweet(response.data.sweet);
 };
 
 /**
