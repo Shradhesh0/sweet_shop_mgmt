@@ -4,7 +4,7 @@ import { validatePrice, validateQuantity } from '../utils/validation';
 
 export const createSweet = async (req: Request, res: Response) => {
   try {
-    const { name, category, price, quantity, description } = req.body;
+    const { name, category, price, quantity, description, image_url } = req.body;
 
     // Validation
     if (!name || !category || price === undefined || quantity === undefined) {
@@ -26,7 +26,8 @@ export const createSweet = async (req: Request, res: Response) => {
       category,
       price,
       quantity,
-      description
+      description,
+      image_url
     });
 
     res.status(201).json({

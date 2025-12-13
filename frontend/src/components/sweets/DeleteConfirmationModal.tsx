@@ -46,7 +46,24 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
         {/* Sweet Info */}
         <div className="bg-gray-50 rounded-lg p-4 mb-6 text-left">
           <div className="flex items-center space-x-3">
-            <div className="text-3xl">🍬</div>
+            <div className="w-16 h-16 flex-shrink-0 bg-white rounded-lg overflow-hidden flex items-center justify-center">
+              {sweet.image_url ? (
+                <img
+                  src={sweet.image_url}
+                  alt={sweet.name}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                    if (target.parentElement) {
+                      target.parentElement.innerHTML = '<div class="text-2xl">🍬</div>';
+                    }
+                  }}
+                />
+              ) : (
+                <div className="text-2xl">🍬</div>
+              )}
+            </div>
             <div>
               <p className="font-medium text-gray-800">{sweet.name}</p>
               <p className="text-sm text-gray-500">{sweet.category}</p>

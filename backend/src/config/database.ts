@@ -5,12 +5,16 @@ dotenv.config();
 
 const isTestEnv = process.env.NODE_ENV === 'test';
 
+// Ensure password is always a string (empty string if not provided)
+// Trim to handle any whitespace from .env file
+const dbPassword = (process.env.DB_PASSWORD ?? '').toString().trim();
+
 const pool = new Pool({
   host: process.env.DB_HOST || 'localhost',
   port: parseInt(process.env.DB_PORT || '5432'),
-  database: isTestEnv ? process.env.TEST_DB_NAME : process.env.DB_NAME,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
+  database: isTestEnv ? (process.env.TEST_DB_NAME || 'sweets_db_test') : (process.env.DB_NAME || 'sweets_db'),
+  user: process.env.DB_USER || 'shradhesh',
+  password: dbPassword,
   max: 20,
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 2000,

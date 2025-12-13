@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 import app from './app';
 import pool from './config/database';
+import { addImageUrlToSweets } from './migrations/add_image_url_to_sweets';
 
 dotenv.config();
 
@@ -11,6 +12,9 @@ const startServer = async () => {
     // Test database connection
     await pool.query('SELECT NOW()');
     console.log('Database connection established');
+
+    // Run migration to ensure image_url column exists
+    await addImageUrlToSweets();
 
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);

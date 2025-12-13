@@ -9,7 +9,8 @@
     "start": "node dist/server.js",
     "test": "jest --coverage --detectOpenHandles",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "migrate:image_url": "ts-node src/migrations/add_image_url_to_sweets.ts"
   },
   "keywords": [
     "api",

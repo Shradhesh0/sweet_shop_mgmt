@@ -22,6 +22,7 @@ beforeAll(async () => {
       price DECIMAL(10, 2) NOT NULL,
       quantity INTEGER NOT NULL DEFAULT 0,
       description TEXT,
+      image_url TEXT,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );

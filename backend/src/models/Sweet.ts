@@ -7,6 +7,7 @@ export interface Sweet {
   price: number;
   quantity: number;
   description?: string;
+  image_url?: string;
   created_at: Date;
   updated_at: Date;
 }
@@ -17,6 +18,7 @@ export interface SweetInput {
   price: number;
   quantity: number;
   description?: string;
+  image_url?: string;
 }
 
 export interface SearchParams {
@@ -29,8 +31,8 @@ export interface SearchParams {
 export class SweetModel {
   static async create(sweetData: SweetInput): Promise<Sweet> {
     const text = `
-      INSERT INTO sweets (name, category, price, quantity, description)
-      VALUES ($1, $2, $3, $4, $5)
+      INSERT INTO sweets (name, category, price, quantity, description, image_url)
+      VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING *
     `;
     const values = [
@@ -38,7 +40,8 @@ export class SweetModel {
       sweetData.category,
       sweetData.price,
       sweetData.quantity,
-      sweetData.description || null
+      sweetData.description || null,
+      sweetData.image_url || null
     ];
     
     const result = await query(text, values);
@@ -124,6 +127,12 @@ export class SweetModel {
     if (sweetData.description !== undefined) {
       fields.push(`description = $${paramCount}`);
       values.push(sweetData.description);
+      paramCount++;
+    }
+
+    if (sweetData.image_url !== undefined) {
+      fields.push(`image_url = $${paramCount}`);
+      values.push(sweetData.image_url || null);
       paramCount++;
     }
 

@@ -32,9 +32,25 @@ const SweetCard: React.FC<SweetCardProps> = ({
 
   return (
     <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
-      {/* Header with gradient */}
-      <div className="bg-gradient-to-r from-purple-500 to-pink-500 h-32 flex items-center justify-center">
-        <div className="text-6xl">🍬</div>
+      {/* Header with image or gradient fallback */}
+      <div className="h-48 bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center overflow-hidden">
+        {sweet.image_url ? (
+          <img
+            src={sweet.image_url}
+            alt={sweet.name}
+            className="w-full h-full object-cover"
+            onError={(e) => {
+              // Fallback to emoji if image fails to load
+              const target = e.target as HTMLImageElement;
+              target.style.display = 'none';
+              if (target.parentElement) {
+                target.parentElement.innerHTML = '<div class="text-6xl">🍬</div>';
+              }
+            }}
+          />
+        ) : (
+          <div className="text-6xl">🍬</div>
+        )}
       </div>
 
       {/* Content */}

@@ -86,7 +86,24 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({
           {/* Sweet Info */}
           <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-6 mb-6">
             <div className="flex items-center space-x-4">
-              <div className="text-5xl">🍬</div>
+              <div className="w-20 h-20 flex-shrink-0 bg-white rounded-lg overflow-hidden flex items-center justify-center">
+                {sweet.image_url ? (
+                  <img
+                    src={sweet.image_url}
+                    alt={sweet.name}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = 'none';
+                      if (target.parentElement) {
+                        target.parentElement.innerHTML = '<div class="text-3xl">🍬</div>';
+                      }
+                    }}
+                  />
+                ) : (
+                  <div className="text-3xl">🍬</div>
+                )}
+              </div>
               <div className="flex-1">
                 <h3 className="text-xl font-bold text-gray-800">{sweet.name}</h3>
                 <p className="text-gray-600">{sweet.category}</p>

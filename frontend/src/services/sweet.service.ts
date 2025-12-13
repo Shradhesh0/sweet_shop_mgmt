@@ -20,6 +20,7 @@ const normalizeSweet = (sweet: any): Sweet => ({
   price: typeof sweet.price === 'string' ? parseFloat(sweet.price) : Number(sweet.price),
   quantity: typeof sweet.quantity === 'string' ? parseInt(sweet.quantity, 10) : Number(sweet.quantity),
   id: typeof sweet.id === 'string' ? parseInt(sweet.id, 10) : Number(sweet.id),
+  image_url: sweet.image_url || undefined,
 });
 
 /**

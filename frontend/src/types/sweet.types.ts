@@ -9,6 +9,7 @@ export interface Sweet {
   price: number;
   quantity: number;
   description?: string;
+  image_url?: string;
   created_at: string;
   updated_at: string;
 }
@@ -19,6 +20,7 @@ export interface CreateSweetData {
   price: number;
   quantity: number;
   description?: string;
+  image_url?: string;
 }
 
 export interface UpdateSweetData {
@@ -27,6 +29,7 @@ export interface UpdateSweetData {
   price?: number;
   quantity?: number;
   description?: string;
+  image_url?: string;
 }
 
 export interface SearchParams {
