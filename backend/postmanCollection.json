@@ -1,0 +1,356 @@
+{
+	"info": {
+		"_postman_id": "sweet-shop-api-collection",
+		"name": "Sweet Shop Management API",
+		"description": "API collection for Sweet Shop Management System",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Health Check",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/health",
+							"host": ["{{baseUrl}}"],
+							"path": ["health"]
+						},
+						"description": "Check if the server is running"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Register",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    if (response.token) {",
+									"        pm.environment.set('authToken', response.token);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"John Doe\",\n    \"email\": \"john@example.com\",\n    \"password\": \"SecurePass123!\",\n    \"role\": \"user\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "auth", "register"]
+						},
+						"description": "Register a new user. Role can be 'user' or 'admin'"
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    if (response.token) {",
+									"        pm.environment.set('authToken', response.token);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"john@example.com\",\n    \"password\": \"SecurePass123!\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "auth", "login"]
+						},
+						"description": "Login with email and password. Token is automatically saved to environment variable."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Sweets",
+			"item": [
+				{
+					"name": "Create Sweet",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Gulab Jamun\",\n    \"category\": \"Indian\",\n    \"price\": 50.00,\n    \"quantity\": 100,\n    \"description\": \"Delicious Indian sweet made from milk solids\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/sweets",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "sweets"]
+						},
+						"description": "Create a new sweet item. Requires authentication."
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Sweets",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/sweets",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "sweets"]
+						},
+						"description": "Get all sweets. Requires authentication."
+					},
+					"response": []
+				},
+				{
+					"name": "Search Sweets",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/sweets/search?name=Gulab&category=Indian&minPrice=10&maxPrice=100",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "sweets", "search"],
+							"query": [
+								{
+									"key": "name",
+									"value": "Gulab",
+									"description": "Search by sweet name"
+								},
+								{
+									"key": "category",
+									"value": "Indian",
+									"description": "Filter by category"
+								},
+								{
+									"key": "minPrice",
+									"value": "10",
+									"description": "Minimum price filter"
+								},
+								{
+									"key": "maxPrice",
+									"value": "100",
+									"description": "Maximum price filter"
+								}
+							]
+						},
+						"description": "Search sweets with filters. All query parameters are optional. Requires authentication."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Sweet",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Gulab Jamun Premium\",\n    \"price\": 60.00,\n    \"quantity\": 150\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/sweets/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "sweets", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "Sweet ID"
+								}
+							]
+						},
+						"description": "Update a sweet. You can update any field. Requires authentication."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Sweet",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/sweets/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "sweets", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "Sweet ID"
+								}
+							]
+						},
+						"description": "Delete a sweet. Requires admin authentication."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Inventory",
+			"item": [
+				{
+					"name": "Purchase Sweet",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"quantity\": 5\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/sweets/:id/purchase",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "sweets", ":id", "purchase"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "Sweet ID"
+								}
+							]
+						},
+						"description": "Purchase a sweet (decreases inventory). Requires authentication."
+					},
+					"response": []
+				},
+				{
+					"name": "Restock Sweet",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"quantity\": 50\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/sweets/:id/restock",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "sweets", ":id", "restock"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "Sweet ID"
+								}
+							]
+						},
+						"description": "Restock a sweet (increases inventory). Requires admin authentication."
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:3000",
+			"type": "string"
+		},
+		{
+			"key": "authToken",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
