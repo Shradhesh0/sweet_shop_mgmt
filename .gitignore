@@ -11,3 +11,4 @@ dist/
 .idea/
 tmp/
 temp/
+backend/coverage
