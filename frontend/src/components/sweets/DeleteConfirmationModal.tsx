@@ -68,7 +68,7 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
               <p className="font-medium text-gray-800">{sweet.name}</p>
               <p className="text-sm text-gray-500">{sweet.category}</p>
               <p className="text-sm text-gray-500">
-                Stock: {sweet.quantity} • Price: ${(Number(sweet.price) || 0).toFixed(2)}
+                Stock: {sweet.quantity} • Price: ₹{(Number(sweet.price) || 0).toFixed(2)}
               </p>
             </div>
           </div>

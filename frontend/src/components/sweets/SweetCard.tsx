@@ -70,7 +70,7 @@ const SweetCard: React.FC<SweetCardProps> = ({
 
         {/* Price */}
         <div className="flex items-baseline space-x-1 mb-4">
-          <span className="text-3xl font-bold text-purple-600">${(Number(sweet.price) || 0).toFixed(2)}</span>
+          <span className="text-3xl font-bold text-purple-600">₹{(Number(sweet.price) || 0).toFixed(2)}</span>
           <span className="text-gray-500 text-sm">per piece</span>
         </div>
 
