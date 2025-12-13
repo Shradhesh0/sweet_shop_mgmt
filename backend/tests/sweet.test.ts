@@ -40,8 +40,50 @@ describe('Sweet Management Endpoints', () => {
         .send(sweetData)
         .expect(201);
 
-      expect(response.body.sweet).toMatchObject(sweetData);
+      expect(response.body.sweet.name).toBe(sweetData.name);
+      expect(response.body.sweet.category).toBe(sweetData.category);
+      expect(parseFloat(response.body.sweet.price)).toBe(sweetData.price);
+      expect(parseInt(response.body.sweet.quantity)).toBe(sweetData.quantity);
+      expect(response.body.sweet.description).toBe(sweetData.description);
       expect(response.body.sweet).toHaveProperty('id');
+      expect(response.body.sweet).toHaveProperty('image_url');
+    });
+
+    it('should create a sweet with image_url', async () => {
+      const sweetData = {
+        name: 'Gulab Jamun',
+        category: 'Indian',
+        price: 50.00,
+        quantity: 100,
+        description: 'Delicious Indian sweet',
+        image_url: 'https://example.com/gulab-jamun.jpg'
+      };
+
+      const response = await request(app)
+        .post('/api/sweets')
+        .set('Authorization', `Bearer ${userToken}`)
+        .send(sweetData)
+        .expect(201);
+
+      expect(response.body.sweet.image_url).toBe(sweetData.image_url);
+    });
+
+    it('should allow regular users to create sweets', async () => {
+      const sweetData = {
+        name: 'User Created Sweet',
+        category: 'Test',
+        price: 1.99,
+        quantity: 50,
+        description: 'Created by regular user'
+      };
+
+      const response = await request(app)
+        .post('/api/sweets')
+        .set('Authorization', `Bearer ${userToken}`)
+        .send(sweetData)
+        .expect(201);
+
+      expect(response.body.sweet.name).toBe(sweetData.name);
     });
 
     it('should fail without authentication', async () => {
@@ -132,6 +174,7 @@ describe('Sweet Management Endpoints', () => {
       expect(response.body.sweets).toHaveLength(2);
       expect(response.body.sweets[0]).toHaveProperty('name');
       expect(response.body.sweets[0]).toHaveProperty('price');
+      expect(response.body.sweets[0]).toHaveProperty('image_url');
     });
 
     it('should fail without authentication', async () => {
@@ -181,6 +224,9 @@ describe('Sweet Management Endpoints', () => {
 
       expect(response.body.sweets).toHaveLength(2);
       expect(response.body.count).toBe(2);
+      response.body.sweets.forEach((sweet: any) => {
+        expect(sweet).toHaveProperty('image_url');
+      });
     });
 
     it('should search by category', async () => {
@@ -191,6 +237,7 @@ describe('Sweet Management Endpoints', () => {
 
       expect(response.body.sweets).toHaveLength(1);
       expect(response.body.sweets[0].category).toBe('Gummy');
+      expect(response.body.sweets[0]).toHaveProperty('image_url');
     });
 
     it('should search by price range', async () => {
@@ -249,12 +296,58 @@ describe('Sweet Management Endpoints', () => {
       expect(parseFloat(response.body.sweet.price)).toBe(6.99);
     });
 
+    it('should update sweet with image_url', async () => {
+      const updateData = {
+        image_url: 'https://example.com/updated-image.jpg'
+      };
+
+      const response = await request(app)
+        .put(`/api/sweets/${sweetId}`)
+        .set('Authorization', `Bearer ${userToken}`)
+        .send(updateData)
+        .expect(200);
+
+      expect(response.body.sweet.image_url).toBe(updateData.image_url);
+    });
+
+    it('should update sweet to remove image_url', async () => {
+      // First add an image_url
+      await request(app)
+        .put(`/api/sweets/${sweetId}`)
+        .set('Authorization', `Bearer ${userToken}`)
+        .send({ image_url: 'https://example.com/image.jpg' })
+        .expect(200);
+
+      // Then remove it by setting to null/empty
+      const response = await request(app)
+        .put(`/api/sweets/${sweetId}`)
+        .set('Authorization', `Bearer ${userToken}`)
+        .send({ image_url: null })
+        .expect(200);
+
+      expect(response.body.sweet.image_url).toBeNull();
+    });
+
     it('should fail with invalid sweet ID', async () => {
       await request(app)
         .put('/api/sweets/99999')
         .set('Authorization', `Bearer ${userToken}`)
         .send({ name: 'Updated Name' })
         .expect(404);
+    });
+
+    it('should allow regular users to update sweets', async () => {
+      const updateData = {
+        description: 'Updated by regular user'
+      };
+
+      const response = await request(app)
+        .put(`/api/sweets/${sweetId}`)
+        .set('Authorization', `Bearer ${userToken}`)
+        .send(updateData)
+        .expect(200);
+
+      expect(response.body.sweet.description).toBe(updateData.description);
     });
 
     it('should fail without authentication', async () => {

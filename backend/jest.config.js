@@ -15,5 +15,8 @@ module.exports = {
   forceExit: true,
   clearMocks: true,
   resetMocks: true,
-  restoreMocks: true
+  restoreMocks: true,
+  testEnvironmentOptions: {
+    NODE_ENV: 'test'
+  }
 };

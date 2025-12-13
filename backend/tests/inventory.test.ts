@@ -31,7 +31,9 @@ describe('Inventory Management Endpoints', () => {
         name: 'Test Sweet',
         category: 'Test',
         price: 1.99,
-        quantity: 100
+        quantity: 100,
+        description: 'Test sweet for inventory operations',
+        image_url: 'https://example.com/test-sweet.jpg'
       });
     sweetId = sweetRes.body.sweet.id;
   });
@@ -46,8 +48,9 @@ describe('Inventory Management Endpoints', () => {
 
       expect(response.body.message).toContain('successful');
       expect(response.body.purchased).toBe(10);
-      expect(response.body.sweet.quantity).toBe(90);
-      expect(response.body.totalPrice).toBe(19.9);
+      expect(parseInt(response.body.sweet.quantity)).toBe(90);
+      expect(parseFloat(response.body.totalPrice)).toBeCloseTo(19.9, 2);
+      expect(response.body.sweet).toHaveProperty('image_url');
     });
 
     it('should fail with insufficient stock', async () => {
@@ -112,7 +115,7 @@ describe('Inventory Management Endpoints', () => {
         .send({ quantity: 20 })
         .expect(200);
 
-      expect(response.body.sweet.quantity).toBe(50);
+      expect(parseInt(response.body.sweet.quantity)).toBe(50);
     });
   });
 
@@ -126,7 +129,8 @@ describe('Inventory Management Endpoints', () => {
 
       expect(response.body.message).toContain('successful');
       expect(response.body.restocked).toBe(50);
-      expect(response.body.sweet.quantity).toBe(150);
+      expect(parseInt(response.body.sweet.quantity)).toBe(150);
+      expect(response.body.sweet).toHaveProperty('image_url');
     });
 
     it('should fail as regular user', async () => {
@@ -177,7 +181,7 @@ describe('Inventory Management Endpoints', () => {
         .send({ quantity: 25 })
         .expect(200);
 
-      expect(response.body.sweet.quantity).toBe(150);
+      expect(parseInt(response.body.sweet.quantity)).toBe(150);
     });
   });
 
@@ -196,7 +200,7 @@ describe('Inventory Management Endpoints', () => {
         .set('Authorization', `Bearer ${userToken}`);
       
       let sweet = getRes.body.sweets.find((s: any) => s.id === sweetId);
-      expect(sweet.quantity).toBe(40);
+      expect(parseInt(sweet.quantity)).toBe(40);
 
       // Restock
       await request(app)
@@ -211,7 +215,7 @@ describe('Inventory Management Endpoints', () => {
         .set('Authorization', `Bearer ${adminToken}`);
       
       sweet = getRes.body.sweets.find((s: any) => s.id === sweetId);
-      expect(sweet.quantity).toBe(140);
+      expect(parseInt(sweet.quantity)).toBe(140);
     });
 
     it('should prevent purchase when quantity would go negative', async () => {
