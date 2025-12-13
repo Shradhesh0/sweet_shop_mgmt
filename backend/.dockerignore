@@ -12,7 +12,6 @@ tests
 *.test.ts
 *.test.js
 jest.config.js
-tsconfig.json
 .git
 .gitignore
 README.md

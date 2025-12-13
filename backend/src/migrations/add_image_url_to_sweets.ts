@@ -7,6 +7,20 @@ import { query } from '../config/database';
 
 export const addImageUrlToSweets = async (): Promise<void> => {
   try {
+    // First check if sweets table exists
+    const checkTable = `
+      SELECT table_name 
+      FROM information_schema.tables 
+      WHERE table_schema = 'public' AND table_name = 'sweets';
+    `;
+    
+    const tableResult = await query(checkTable);
+    
+    if (tableResult.rows.length === 0) {
+      console.log('⚠️  sweets table does not exist, skipping image_url migration');
+      return;
+    }
+
     // Check if column already exists
     const checkColumn = `
       SELECT column_name 
@@ -28,7 +42,8 @@ export const addImageUrlToSweets = async (): Promise<void> => {
     }
   } catch (error) {
     console.error('❌ Error adding image_url column:', error);
-    throw error;
+    // Don't throw - allow server to continue even if migration fails
+    // This prevents server crash on first run before tables are created
   }
 };
 
